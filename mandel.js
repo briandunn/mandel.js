@@ -1,80 +1,36 @@
-var canvas = document.getElementById('canvas'), maxIterations = 40
+const canvas = document.getElementById('canvas'), maxIterations = 40
 
-var mapCoords = function(canvas, fn) {
-  var context   = canvas.getContext('2d'),
-      image     = context.createImageData(canvas.width, canvas.height)
+const worker = new Worker('worker.js')
 
-  for (var i = 0; i < image.data.length / 4; i++) {
-    var intIndex = i * 4;
-    var x = i % canvas.width, y = (i / canvas.width) >> 0
-    fn(x,y).forEach((value, i)=> image.data[intIndex + i] = value)
-  }
-  context.putImageData(image,0,0)
-  return image.data
-}
-
-class Complex {
-  constructor(real, imaginary) {
-    this.real = real
-    this.imaginary = imaginary
+class Composite {
+  constructor(canvas) {
+    this.canvas = canvas
   }
 
-  abs() {
-    return Math.sqrt(Math.pow(this.real, 2) + Math.pow(this.imaginary, 2))
+  chunk(count) {
+    return [{
+      width: this.canvas.width,
+      height: this.canvas.height,
+      offsetX: 0,
+      offsetY: 0
+    }]
   }
 
-  square() {
-    return new Complex(
-      Math.pow(this.real,2) - Math.pow(this.imaginary, 2),
-      2 * this.real * this.imaginary
-    )
-  }
+  setChunk(chunk, data) {
+    const context = this.canvas.getContext('2d'),
+          image   = context.createImageData(chunk.width, chunk.height)
 
-  add(complex) {
-    return new Complex(
-      this.real + complex.real,
-      this.imaginary + complex.imaginary
-    )
+    for (var i = 0; i < data.length; i++)
+      image.data[i] = data[i]
+
+    context.putImageData(image,chunk.offsetX,chunk.offsetY)
   }
 }
 
-var scale = (x,y) => {
-  return [
-      (x / canvas.width)  * 4 - 2,
-      (y / canvas.height) * 2 - 1
-  ]
+const composite = new Composite(canvas)
+
+worker.onmessage = ({data: {chunk,data}})=> {
+  composite.setChunk(chunk, data)
 }
 
-var mandel = (c)=> (z)=> z.square().add(c)
-
-var iterate = function* (start, fn) {
-  var next = fn(start)
-  while(true) {
-    yield(next)
-    next = fn(next)
-  }
-}
-
-var takeWhile = function(gen, test) {
-  var values = []
-  for(value of gen) {
-    if(!test(value, values.length)) break
-    values.push(value)
-  }
-  return values
-}
-
-var toColor = function(value) {
-  var ranged = value * (1 << 24)
-  return [(ranged >> 16 & 0xff), (ranged >> 8 & 0xff),(ranged >> 0 & 0xff),256]
-}
-
-mapCoords(canvas, (x,y)=> {
-  var [real, imaginary] = scale(x,y)
-  var c = new Complex(real, imaginary)
-  var iterations = takeWhile(
-    iterate(new Complex(0,0), mandel(c)),
-    (c,i)=> i <= maxIterations && c.abs() <= 2
-  ).length
-  return toColor(iterations / maxIterations)
-})
+composite.chunk(1).forEach((chunk) => worker.postMessage(chunk))
