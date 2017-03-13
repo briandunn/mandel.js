@@ -1,4 +1,4 @@
-var canvas = document.getElementById('canvas'), maxIterations = 80
+var canvas = document.getElementById('canvas'), maxIterations = 40
 
 var mapCoords = function(canvas, fn) {
   var context   = canvas.getContext('2d'),
@@ -64,6 +64,11 @@ var takeWhile = function(gen, test) {
   return values
 }
 
+var toColor = function(value) {
+  var ranged = value * (1 << 24)
+  return [(ranged >> 16 & 0xff), (ranged >> 8 & 0xff),(ranged >> 0 & 0xff),256]
+}
+
 mapCoords(canvas, (x,y)=> {
   var [real, imaginary] = scale(x,y)
   var c = new Complex(real, imaginary)
@@ -71,6 +76,5 @@ mapCoords(canvas, (x,y)=> {
     iterate(new Complex(0,0), mandel(c)),
     (c,i)=> i <= maxIterations && c.abs() <= 2
   ).length
-  var ranged = (iterations / maxIterations * 256)
-  return [ranged,ranged,ranged,256]
+  return toColor(iterations / maxIterations)
 })
