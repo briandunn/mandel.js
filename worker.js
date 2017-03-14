@@ -1,4 +1,5 @@
-const initialRange = [4,2]
+const initialRange = [4,2], maxIterations = 40
+
 
 class Chunk {
   constructor(attributes) {
@@ -14,18 +15,25 @@ class Chunk {
   width() {
     return this.compositeDimensions[0] / this.count
   }
+
   height() {
     return this.compositeDimensions[1]
   }
 
   scaleX(x) {
-    const scaleW = initialRange[0], compositeW = this.compositeDimensions[0]
-    return (x + this.offsetX()) / compositeW * scaleW - scaleW / 2
+    return this._scale(0,x)
   }
 
   scaleY(y) {
-    const scaleH = initialRange[1], compositeH = this.compositeDimensions[1]
-    return y / compositeH * scaleH - scaleH / 2
+    return this._scale(1,y)
+  }
+
+  _scale(i, d) {
+    const scale     = initialRange[i],
+          composite = this.compositeDimensions[i],
+          offset    = [this.offsetX(), this.offsetY()][i],
+          scaled    = (d + offset + this.center[i]) / composite * scale - scale / 2
+    return scaled / this.zoom
   }
 }
 
@@ -54,8 +62,6 @@ class Complex {
   }
 }
 
-const maxIterations = 40
-
 onmessage = (message)=> {
   const chunk = new Chunk(message.data), width = chunk.width()
   let data = new Uint8ClampedArray(width * chunk.height() * 4)
@@ -81,7 +87,7 @@ const iterate = function* (start, fn) {
 }
 
 const takeWhile = (gen, test)=> {
-  var values = []
+  let values = []
   for(value of gen) {
     if(!test(value, values.length)) break
     values.push(value)
@@ -90,8 +96,8 @@ const takeWhile = (gen, test)=> {
 }
 
 const toColor = (value)=> {
-  var ranged = (value * (1 << 8)) >> 0
-  return [ranged, ranged, ranged, 255]
+  const ranged = (value * (1 << 24)) >> 0
+  return [ranged & 0xff , (ranged >> 8) & 0xff, (ranged >> 16) & 0xff, 255]
 }
 
 const mandel = (c)=> (z)=> z.square().add(c)

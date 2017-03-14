@@ -1,4 +1,13 @@
-const canvas = document.getElementById('canvas'), maxIterations = 40
+const canvas = document.getElementById('canvas')
+
+canvas.onclick = (e)=> {
+  composite.zoom = composite.zoom + 1
+  composite.center = [
+    composite.center[0] + (e.x - (composite.canvas.width / 2)),
+    composite.center[1] + (e.y - (composite.canvas.height / 2))
+  ]
+  draw()
+}
 
 class Chunk {
   constructor(attributes) {
@@ -8,9 +17,8 @@ class Chunk {
   offsetX() {
     return this.width() * this.offset
   }
-  offsetY() {
-    return 0
-  }
+
+  offsetY() { return 0 }
 
   width() {
     return this.compositeDimensions[0] / this.count
@@ -22,6 +30,8 @@ class Chunk {
 
 class Composite {
   constructor(canvas) {
+    this.center = [0, 0]
+    this.zoom = 1
     this.canvas = canvas
   }
 
@@ -29,8 +39,8 @@ class Composite {
     return Array(count).fill(0).map((_,i)=> new Chunk({
         compositeDimensions: [this.canvas.width, this.canvas.height],
         offset: i,
-        center: [0,0],
-        zoom: 1,
+        center: this.center,
+        zoom: this.zoom,
         count: count
       })
     )
@@ -40,22 +50,25 @@ class Composite {
     const context = this.canvas.getContext('2d'),
           image   = context.createImageData(chunk.width(), chunk.height())
 
-    for (var i = 0; i < data.length; i++)
+    for (let i = 0; i < data.length; i++)
       image.data[i] = data[i]
 
-    console.log(chunk)
     context.putImageData(image,chunk.offsetX(),chunk.offsetY())
   }
 }
 
 const composite = new Composite(canvas)
 
-composite.chunk(8).forEach((chunk)=> {
-  const worker = new Worker('worker.js')
+const draw = ()=> {
+  composite.chunk(8).forEach((chunk)=> {
+    const worker = new Worker('worker.js')
 
-  worker.onmessage = ({data: {chunk,data}})=> {
-    composite.setChunk(new Chunk(chunk), data)
-  }
+    worker.onmessage = ({data: {chunk,data}})=> {
+      composite.setChunk(new Chunk(chunk), data)
+    }
 
-  worker.postMessage(chunk)
-})
+    worker.postMessage(chunk)
+  })
+}
+
+draw()
