@@ -1,3 +1,34 @@
+const initialRange = [4,2]
+
+class Chunk {
+  constructor(attributes) {
+    Object.assign(this, attributes)
+  }
+
+  offsetX() {
+    return this.width() * this.offset
+  }
+
+  offsetY() { return 0 }
+
+  width() {
+    return this.compositeDimensions[0] / this.count
+  }
+  height() {
+    return this.compositeDimensions[1]
+  }
+
+  scaleX(x) {
+    const scaleW = initialRange[0], compositeW = this.compositeDimensions[0]
+    return (x + this.offsetX()) / compositeW * scaleW - scaleW / 2
+  }
+
+  scaleY(y) {
+    const scaleH = initialRange[1], compositeH = this.compositeDimensions[1]
+    return y / compositeH * scaleH - scaleH / 2
+  }
+}
+
 class Complex {
   constructor(real, imaginary) {
     this.real = real
@@ -26,22 +57,19 @@ class Complex {
 const maxIterations = 40
 
 onmessage = (message)=> {
-  const chunk = message.data
-  let data = new Uint8ClampedArray(chunk.width * chunk.height * 4)
+  const chunk = new Chunk(message.data), width = chunk.width()
+  let data = new Uint8ClampedArray(width * chunk.height() * 4)
 
   for (let i = 0; i < data.length / 4; i++) {
     let intIndex = i * 4;
-    let x = i % chunk.width, y = (i / chunk.width) >> 0
-    toColor(calculate(toComplex(chunk,x,y))).forEach((value, i)=> {
+    let x = i % width, y = (i / width) >> 0
+    toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)))).forEach((value, i)=> {
       data[intIndex + i] = value
     })
   }
 
   postMessage({chunk: chunk, data: data})
 }
-
-const toComplex = (chunk,x,y) =>
-  new Complex((x / chunk.width)  * 4 - 2, (y / chunk.height) * 2 - 1)
 
 // an iterable that returns successive feedback values for fn starting with start
 const iterate = function* (start, fn) {
