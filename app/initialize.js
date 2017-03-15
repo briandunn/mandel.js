@@ -1,4 +1,4 @@
-import Composite from './mandel'
+import Composite from 'composite'
 
 document.addEventListener('DOMContentLoaded', function() {
 

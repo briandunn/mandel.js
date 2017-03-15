@@ -41,4 +41,4 @@ class Composite {
   }
 }
 
-export default Composite;
+export default Composite

@@ -5,8 +5,8 @@ exports.config = {
   files: {
   javascripts: {
     joinTo: {
-      'app.js': ['app/mandel.js', 'app/chunk.js', 'app/initialize.js'],
-      'worker.js': ['app/chunk.js', 'app/worker.js']
+      'app.js': ['app/mandel.js', 'app/chunk.js', 'app/composite.js', 'app/initialize.js'],
+      'worker.js': ['app/chunk.js', 'app/complex.js', 'app/worker.js']
     }
   },
   stylesheets: {joinTo: 'app.css'}
