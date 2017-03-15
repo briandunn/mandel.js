@@ -6,7 +6,6 @@ const initialRange = [4,2], maxIterations = 40
 global.onmessage = (message)=> {
   const chunk = new Chunk(message.data), width = chunk.width()
   let data = new Uint8ClampedArray(width * chunk.height() * 4)
-  console.log(chunk)
 
   for (let i = 0; i < data.length / 4; i++) {
     let intIndex = i * 4;
@@ -48,7 +47,7 @@ const takeWhile = (gen, test)=> {
 
 const toColor = (value)=> {
   const ranged = (value * (1 << 24)) >> 0
-  return [ranged & 0xff , (ranged >> 8) & 0xff, (ranged >> 16) & 0xff, 255]
+  return Array(3).fill(0).map((_,i)=> (ranged >> i * 8) & 0xff).concat([0xff])
 }
 
 const mandel = (c)=> (z)=> z.square().add(c)

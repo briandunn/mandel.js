@@ -29,13 +29,19 @@ class Composite {
   }
 
   draw(workers) {
-    this.chunk(8).forEach((chunk, i)=> {
+    const start = performance.now()
+    let pending = 0
+    this.chunk(workers.length).forEach((chunk, i)=> {
       const worker = workers[i % workers.length]
 
       worker.onmessage = ({data: {chunk,data}})=> {
+        pending -= 1
+        if(pending == 0)
+          console.log((performance.now() - start) + "ms")
         this.setChunk(new Chunk(chunk), data)
       }
 
+      pending += 1
       worker.postMessage(chunk)
     })
   }

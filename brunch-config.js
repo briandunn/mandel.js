@@ -16,7 +16,11 @@ exports.config = {
       if(path === 'worker.js')
         return data
       else
-        return {prefix: `require.define({'${path}': function(exports, require, module) {`, data:data, suffix: '}});'}
+        return {
+          prefix: `require.define({'${path}': function(exports, require, module) {`,
+          data: data,
+          suffix: '}});'
+        }
     }
   },
   plugins: {
