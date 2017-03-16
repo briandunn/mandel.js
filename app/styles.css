@@ -1,2 +1,7 @@
 body { margin: 0 }
 canvas { cursor: zoom-in }
+.zoom {
+    position: absolute;
+    background-color: #888;
+    mix-blend-mode: color-dodge;
+}

@@ -5,7 +5,7 @@ exports.config = {
   files: {
   javascripts: {
     joinTo: {
-      'app.js': ['app/mandel.js', 'app/chunk.js', 'app/composite.js', 'app/initialize.js'],
+      'app.js': /^(node_modules|app\/.*\.js)/,
       'worker.js': ['app/chunk.js', 'app/complex.js', 'app/worker.js']
     }
   },
@@ -25,7 +25,11 @@ exports.config = {
   },
   plugins: {
     babel: {
-      presets: ["es2015"]
+      presets: ["es2015", "react"]
     }
+  },
+  npm: {
+    enabled: true,
+    whitelist: ["react", "react-dom"]
   }
 };
