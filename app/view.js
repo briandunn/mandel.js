@@ -37,12 +37,49 @@ class Mandelbrot extends React.Component {
 }
 
 class Zoom extends React.Component {
+  constructor() {
+    super()
+    this.state = {}
+  }
 
-  mousedown() { (e) => {} }
+  mousedown(e) {
+    e.stopPropagation()
+    const {pageX,pageY} = e
+    this.setState( (state) => state.drag ? {drag: false} : {start: {x:pageX,y:pageY}, stop: null, drag: true})
+  }
+
+  mousemove(e) {
+    e.stopPropagation()
+    const {pageX,pageY} = e
+    this.setState((state) => state.drag ? {stop: {x:pageX,y:pageY}} : {})
+  }
+
+  zoom(e) {
+    debugger
+  }
+
+  style() {
+    const {start,stop} = this.state
+    if(start && stop) {
+      const [lowY,highY] = [start.y, stop.y].sort((a,b)=> a - b)
+      const [lowX,highX] = [start.x, stop.x].sort((a,b)=> a - b)
+      return {
+        top: lowY,
+        height: highY - lowY,
+        left: lowX,
+        width: highX - lowX
+      }
+    } else
+      return {}
+  }
 
   render() {
-    return (<div onMouseDown={this.mousedown}>
-      <div className='zoom' style={{}}> </div>
+    return (
+      <div
+        className='zoomable'
+        onMouseMove={this.mousemove.bind(this)}
+        onMouseDown={this.mousedown.bind(this)}>
+      <div className='zoom' onMouseDown={this.zoom.bind(this)} style={this.style()}> </div>
       {this.props.children}
       </div>)
   }

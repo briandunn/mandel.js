@@ -1,6 +1,8 @@
 body { margin: 0 }
-canvas { cursor: zoom-in }
+.zoomable { cursor: crosshair }
 .zoom {
+    z-index: 10;
+    cursor: zoom-in;
     position: absolute;
     background-color: #888;
     mix-blend-mode: color-dodge;
