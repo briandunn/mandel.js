@@ -1,9 +1,6 @@
 import Chunk from 'chunk'
 import Complex from 'complex'
 
-const initialRange = [4,2], maxIterations = 40
-
-
 global.onmessage = (message)=> {
   if(!message.data.box) return
 
@@ -13,7 +10,7 @@ global.onmessage = (message)=> {
   for (let i = 0; i < data.length / 4; i++) {
     let intIndex = i * 4;
     let x = i % width, y = (i / width) >> 0
-    toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)))).forEach((value, i)=> {
+    toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)), chunk.iterations)).forEach((value, i)=> {
       data[intIndex + i] = value
     })
   }
@@ -55,7 +52,7 @@ const toColor = (value)=> {
 
 const mandel = (c)=> (z)=> z.square().add(c)
 
-const calculate = (c)=> takeWhile(
+const calculate = (c, maxIterations)=> takeWhile(
     iterate(new Complex(0,0), mandel(c)),
     (c,i)=> i <= maxIterations && c.abs() <= 2
   ).length / maxIterations

@@ -14,13 +14,15 @@ const zoom = (previous, next)=> ({
 const reducer = (state,action)=> {
   switch(action.type) {
     case 'ZOOM':
-      return zoom(state, action.box)
+      return Object.assign({}, state, zoom(state, action.box))
+    case 'ITERATIONS':
+      return Object.assign({}, state, {iterations: action.iterations})
     default:
       return state
   }
 }
 
-const store = createStore(reducer, {width: 5, height: 3, top: -1.5, left: -2.5}, window.devToolsExtension ? compose(devToolsExtension()): compose())
+const store = createStore(reducer, {iterations: 40, width: 5, height: 3, top: -1.5, left: -2.5}, window.devToolsExtension ? compose(devToolsExtension()): compose())
 const App = connect((model) => ({ model }))(View)
 
 document.addEventListener('DOMContentLoaded', function() {

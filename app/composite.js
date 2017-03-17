@@ -1,8 +1,9 @@
 import Chunk from 'chunk'
 
 class Composite {
-  constructor(canvas, {box}) {
+  constructor(canvas, {box, iterations}) {
     this.box = box
+    this.iterations = iterations
     this.canvas = canvas
   }
 
@@ -11,7 +12,8 @@ class Composite {
         frame: {width: this.canvas.width, height:this.canvas.height},
         offset: i,
         box: this.box,
-        count: count
+        count: count,
+        iterations: this.iterations
       })
     )
   }

@@ -23,7 +23,7 @@ class Mandelbrot extends React.Component {
   componentDidUpdate() {
     clearTimeout(this.throttle)
     this.throttle = setTimeout(() => {
-      const composite = new Composite(this.refs.canvas, {box: this.props.box})
+      const composite = new Composite(this.refs.canvas, {box: this.props.box, iterations: this.props.iterations})
       composite.draw(this.workers)
     }, 250)
   }
@@ -97,12 +97,22 @@ class Zoom extends React.Component {
 }
 
 const View = connect(
-  (model)=> ({box: model}),
-  (dispatch)=> ({onZoom:(box)=> {dispatch({type: 'ZOOM', box: box})}})
+  (model)=> ({box: model, iterations: model.iterations}),
+  (dispatch)=> (
+    {
+      onZoom:(box)=> {
+        dispatch({type: 'ZOOM', box: box})
+      },
+      changeIterations:(e)=> {
+        dispatch({type: 'ITERATIONS', iterations: +e.target.value})
+      },
+    }
+  )
 )(
-  ({box,onZoom})=> (
+  ({box,iterations,onZoom,changeIterations})=> (
     <Zoom onZoom={onZoom}>
-      <Mandelbrot box={box}/>
+      <input type="number" value={iterations} onChange={changeIterations}/>
+      <Mandelbrot box={box} iterations={iterations}/>
     </Zoom>
   )
 )
