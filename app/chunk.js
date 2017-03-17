@@ -10,27 +10,26 @@ class Chunk {
   offsetY() { return 0 }
 
   width() {
-    return this.compositeDimensions[0] / this.count
+    return (this.frame.width / this.count) >> 0
   }
 
   height() {
-    return this.compositeDimensions[1]
+    return this.frame.height
   }
 
+  // x is the column of the pixel out of this chunks width
+  // three widths, box, frame, and chunk
   scaleX(x) {
-    return this._scale(0,x)
+    const {width,left} = this.box
+    // x as a fraction of the whole frame
+    const xRatio = (x + this.offsetX()) / this.frame.width
+    return xRatio * width + left
   }
 
   scaleY(y) {
-    return this._scale(1,y)
-  }
-
-  _scale(i, d) {
-    const scale     = initialRange[i],
-          composite = this.compositeDimensions[i],
-          offset    = [this.offsetX(), this.offsetY()][i],
-          scaled    = (d + offset + this.center[i]) / composite * scale - scale / 2
-    return scaled / this.zoom
+    const {height,top} = this.box
+    const yRatio = (y + this.offsetY()) / this.frame.height
+    return yRatio * height + top
   }
 }
 

@@ -1,18 +1,16 @@
 import Chunk from 'chunk'
 
 class Composite {
-  constructor(canvas) {
-    this.center = [0, 0]
-    this.zoom = 1
+  constructor(canvas, {box}) {
+    this.box = box
     this.canvas = canvas
   }
 
   chunk(count) {
     return Array(count).fill(0).map((_,i)=> new Chunk({
-        compositeDimensions: [this.canvas.width, this.canvas.height],
+        frame: {width: this.canvas.width, height:this.canvas.height},
         offset: i,
-        center: this.center,
-        zoom: this.zoom,
+        box: this.box,
         count: count
       })
     )

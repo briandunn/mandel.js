@@ -3,7 +3,10 @@ import Complex from 'complex'
 
 const initialRange = [4,2], maxIterations = 40
 
+
 global.onmessage = (message)=> {
+  if(!message.data.box) return
+
   const chunk = new Chunk(message.data), width = chunk.width()
   let data = new Uint8ClampedArray(width * chunk.height() * 4)
 

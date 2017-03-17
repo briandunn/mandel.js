@@ -30,6 +30,6 @@ exports.config = {
   },
   npm: {
     enabled: true,
-    whitelist: ["react", "react-dom"]
+    detectProcess: false
   }
 };

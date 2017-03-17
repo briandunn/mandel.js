@@ -1,11 +1,12 @@
 import React from 'react'
+import {connect} from 'react-redux'
 import Composite from 'composite'
 
 class Mandelbrot extends React.Component {
-  constructor(props, context) {
+  constructor() {
     super()
-    this.workers = Array(4).fill(0).map(()=> new Worker('worker.js'))
-    this.state = {width: 800, height: 600}
+    this.workers = Array(5).fill(0).map(()=> new Worker('worker.js'))
+    this.state = {width: 0, height: 0}
   }
 
   updateDimensions() {
@@ -22,7 +23,7 @@ class Mandelbrot extends React.Component {
   componentDidUpdate() {
     clearTimeout(this.throttle)
     this.throttle = setTimeout(() => {
-      const composite = new Composite(this.refs.canvas)
+      const composite = new Composite(this.refs.canvas, {box: this.props.box})
       composite.draw(this.workers)
     }, 250)
   }
@@ -55,7 +56,16 @@ class Zoom extends React.Component {
   }
 
   zoom(e) {
-    debugger
+    const {clientWidth, clientHeight} = this.refs.zoomable
+    const {width,height,top,left} = this.style()
+    this.props.onZoom(
+      {
+        top:    top / clientHeight,
+        left:   left / clientWidth,
+        width:  width / clientWidth,
+        height: height / clientHeight,
+      }
+    )
   }
 
   style() {
@@ -77,6 +87,7 @@ class Zoom extends React.Component {
     return (
       <div
         className='zoomable'
+        ref='zoomable'
         onMouseMove={this.mousemove.bind(this)}
         onMouseDown={this.mousedown.bind(this)}>
       <div className='zoom' onMouseDown={this.zoom.bind(this)} style={this.style()}> </div>
@@ -85,6 +96,15 @@ class Zoom extends React.Component {
   }
 }
 
-const View = ()=> <Zoom><Mandelbrot /></Zoom>
+const View = connect(
+  (model)=> ({box: model}),
+  (dispatch)=> ({onZoom:(box)=> {dispatch({type: 'ZOOM', box: box})}})
+)(
+  ({box,onZoom})=> (
+    <Zoom onZoom={onZoom}>
+      <Mandelbrot box={box}/>
+    </Zoom>
+  )
+)
 
-export {Mandelbrot, Zoom, View}
+export default View
