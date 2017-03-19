@@ -46,7 +46,12 @@ class Zoom extends React.Component {
   mousedown(e) {
     e.stopPropagation()
     const {pageX,pageY} = e
-    this.setState( (state) => state.drag ? {drag: false} : {start: {x:pageX,y:pageY}, stop: null, drag: true})
+    this.setState({start: {x:pageX,y:pageY}, stop: null, drag: true})
+  }
+
+  mouseup(e) {
+    e.stopPropagation()
+    this.setState({drag:false})
   }
 
   mousemove(e) {
@@ -89,6 +94,7 @@ class Zoom extends React.Component {
         className='zoomable'
         ref='zoomable'
         onMouseMove={this.mousemove.bind(this)}
+        onMouseUp={this.mouseup.bind(this)}
         onMouseDown={this.mousedown.bind(this)}>
       <div className='zoom' onMouseDown={this.zoom.bind(this)} style={this.style()}> </div>
       {this.props.children}
