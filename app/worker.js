@@ -5,7 +5,7 @@ global.onmessage = (message)=> {
   if(!message.data.box) return
 
   const chunk = new Chunk(message.data), width = chunk.width()
-  let data = new Uint8ClampedArray(width * chunk.height() * 4)
+  let data = chunk.imageData.data
 
   for (let i = 0; i < data.length / 4; i++) {
     let intIndex = i * 4;
@@ -15,7 +15,7 @@ global.onmessage = (message)=> {
     })
   }
 
-  postMessage({chunk: chunk, data: data})
+  postMessage({chunk})
 }
 
 // an iterable that returns successive feedback values for fn starting with start

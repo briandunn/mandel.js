@@ -20,14 +20,11 @@ class Composite {
     })
   }
 
-  setChunk(chunk, data) {
-    const context = this.canvas.getContext('2d'),
-          image   = context.createImageData(chunk.width(), chunk.height())
-
-    for (let i = 0; i < data.length; i++)
-      image.data[i] = data[i]
-
-    context.putImageData(image,chunk.offsetX(),chunk.offsetY())
+  setChunk(chunk) {
+    this
+      .canvas
+      .getContext('2d')
+      .putImageData(chunk.imageData,chunk.offsetX(),chunk.offsetY())
   }
 
   draw(workers) {
@@ -36,11 +33,11 @@ class Composite {
     this.chunk(workers.length).forEach((chunk, i)=> {
       const worker = workers[i % workers.length]
 
-      worker.onmessage = ({data: {chunk,data}})=> {
+      worker.onmessage = ({data: {chunk}})=> {
         pending -= 1
         if(pending == 0)
           console.log((performance.now() - start) + "ms")
-        this.setChunk(new Chunk(chunk), data)
+        this.setChunk(new Chunk(chunk))
       }
 
       pending += 1
