@@ -1,21 +1,33 @@
 import Chunk from 'chunk'
 import Complex from 'complex'
 
+let lastImage = null
 global.onmessage = (message)=> {
   if(!message.data.box) return
 
   const chunk = new Chunk(message.data), width = chunk.width()
-  let data = chunk.imageData.data
 
-  for (let i = 0; i < data.length / 4; i++) {
-    let intIndex = i * 4;
-    let x = i % width, y = (i / width) >> 0
-    toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)), chunk.iterations)).forEach((value, i)=> {
-      data[intIndex + i] = value
-    })
-  }
+  if(!!lastImage)
+    postMessage({chunk: scale(chunk,lastImage)})
+
+  updatePixels(chunk.imageData, (x,y)=> toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)), chunk.iterations)))
+
+  lastImage = chunk.imageData
 
   postMessage({chunk})
+}
+
+const updatePixels = (imageData, fn) => {
+  let {data,width} = imageData
+  for (let i = 0; i < data.length / 4; i++) {
+    let pixelIndex = i * 4, x = i % width, y = (i / width) >> 0
+    fn(x,y,data.slice(pixelIndex,pixelIndex + 4)).forEach((value,i)=> {data[pixelIndex + i] = value})
+  }
+  return imageData
+}
+
+const scale = (chunk,lastImage) => {
+  return chunk
 }
 
 // an iterable that returns successive feedback values for fn starting with start
