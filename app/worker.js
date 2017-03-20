@@ -1,32 +1,45 @@
 import Chunk from 'chunk'
 import Complex from 'complex'
 
-let lastImage = null
+let lastChunk = null
 global.onmessage = (message)=> {
   if(!message.data.box) return
 
   const chunk = new Chunk(message.data), width = chunk.width()
 
-  if(!!lastImage)
-    postMessage({chunk: scale(chunk,lastImage)})
+  if(!!lastChunk)
+    postMessage({chunk: scale(chunk,lastChunk)})
 
-  updatePixels(chunk.imageData, (x,y)=> toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)), chunk.iterations)))
+  updatePixels(chunk.imageData, (x,y)=>
+      toColor(calculate(new Complex(chunk.scaleX(x),chunk.scaleY(y)), chunk.iterations))
+  )
 
-  lastImage = chunk.imageData
+  lastChunk = chunk
 
   postMessage({chunk})
 }
 
 const updatePixels = (imageData, fn) => {
   let {data,width} = imageData
-  for (let i = 0; i < data.length / 4; i++) {
-    let pixelIndex = i * 4, x = i % width, y = (i / width) >> 0
-    fn(x,y,data.slice(pixelIndex,pixelIndex + 4)).forEach((value,i)=> {data[pixelIndex + i] = value})
+  for (let i = 0; i < data.length >> 2; i++) {
+    let pixelIndex = i << 2, x = i % width, y = (i / width) >> 0
+    fn(x,y).forEach((value,i)=> {data[pixelIndex + i] = value})
   }
   return imageData
 }
 
-const scale = (chunk,lastImage) => {
+const getPixel = (imageData,x,y)=> {
+  const pixelIndex = (y * imageData.width + x) << 2
+  return imageData.data.slice(pixelIndex, pixelIndex + 4)
+}
+
+const scale = (chunk, lastChunk) => {
+  // for each pixel at the new scale, look up the closest pixel in the old one
+  updatePixels(chunk.imageData, (x,y)=> getPixel(
+    lastChunk.imageData,
+    (x * chunk.box.left / lastChunk.box.left) >> 0,
+    (y * chunk.box.top / lastChunk.box.top) >> 0
+  ))
   return chunk
 }
 

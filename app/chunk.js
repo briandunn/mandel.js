@@ -13,10 +13,6 @@ class Chunk {
     return this.imageData.width
   }
 
-  height() {
-    return this.imageData.height
-  }
-
   // x is the column of the pixel out of this chunks width
   // three widths, box, frame, and chunk
   scaleX(x) {
