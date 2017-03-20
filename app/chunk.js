@@ -4,17 +4,17 @@ class Chunk {
   }
 
   offsetX() {
-    return this.width() * this.offset
+    return this.imageData.width * this.offset
   }
 
   offsetY() { return 0 }
 
   width() {
-    return (this.frame.width / this.count) >> 0
+    return this.imageData.width
   }
 
   height() {
-    return this.frame.height
+    return this.imageData.height
   }
 
   // x is the column of the pixel out of this chunks width

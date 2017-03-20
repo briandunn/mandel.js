@@ -8,14 +8,16 @@ class Composite {
   }
 
   chunk(count) {
-    return Array(count).fill(0).map((_,i)=> new Chunk({
+    return Array(count).fill(0).map((_,i)=> {
+      const chunkWidth = (this.canvas.width / count) >> 0
+      return new Chunk({
         frame: {width: this.canvas.width, height:this.canvas.height},
         offset: i,
         box: this.box,
-        count: count,
-        iterations: this.iterations
+        iterations: this.iterations,
+        imageData: this.canvas.getContext('2d').getImageData(chunkWidth * i, 0, chunkWidth, this.canvas.height)
       })
-    )
+    })
   }
 
   setChunk(chunk, data) {
