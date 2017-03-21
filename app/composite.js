@@ -31,20 +31,25 @@ class Composite {
 
   scale(chunk, lastChunk) {
     // for each pixel at the new scale, look up the closest pixel in the old one
+    const start = performance.now()
     const scaleX = chunk.box.width / lastChunk.box.width
     const scaleY = chunk.box.height / lastChunk.box.height
+    if(scaleX == 1 && scaleY == 1) return
     const left = ((chunk.box.left - lastChunk.box.left) / lastChunk.box.width) * lastChunk.width()
     const top = ((chunk.box.top - lastChunk.box.top) / lastChunk.box.height) * lastChunk.imageData.height
+
     chunk.updatePixels((x,y)=>
-        lastChunk.getPixel(
-          ((x * scaleX) + left) >> 0,
-          ((y * scaleY) + top) >> 0
-        )
+      lastChunk.getPixel(
+        ((x * scaleX) + left) >> 0,
+        ((y * scaleY) + top) >> 0
+      )
     )
+
     this
       .canvas
       .getContext('2d')
       .putImageData(chunk.imageData,0,0)
+    console.log((performance.now() - start) + "ms scale")
   }
 
   draw(workers) {
@@ -59,7 +64,7 @@ class Composite {
         pending -= 1
         this.setChunk(new Chunk(chunk))
         if(pending == 0) {
-          console.log((performance.now() - start) + "ms")
+          console.log((performance.now() - start) + "ms render")
           lastChunk = this.chunk(1)[0]
         }
       }
