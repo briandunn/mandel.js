@@ -69,7 +69,7 @@ class Zoom extends React.Component {
     const {wheelDeltaX,wheelDeltaY} = e.nativeEvent
     const {clientWidth, clientHeight} = this.refs.zoomable
     this.props.onZoom({
-      top:  -1 * wheelDeltaY / clientHeight,
+      top:  wheelDeltaY / clientHeight,
       left: -1 * wheelDeltaX / clientWidth,
       width: 1,
       height: 1
@@ -134,7 +134,7 @@ const View = connect(
 )(
   ({box,iterations,onZoom,changeIterations})=> (
     <Zoom onZoom={onZoom}>
-      <input type="number" value={iterations} onChange={changeIterations}/>
+      <input type="number" min="0" value={iterations} onChange={changeIterations}/>
       <Mandelbrot box={box} iterations={iterations}/>
     </Zoom>
   )

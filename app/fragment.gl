@@ -7,10 +7,44 @@ precision mediump float;
 precision mediump int;
 
 uniform ivec2 window_size;
+//left top width height
+uniform int max_iterations;
+uniform vec4 box;
 
+vec2 scale() {
+  float left   = box[0];
+  float top    = box[1];
+  float width  = box[2];
+  float height = box[3];
+  float x = (gl_FragCoord.x / float(window_size.x)) * width + left;
+  float y = (gl_FragCoord.y / float(window_size.y)) * height + top;
+  return vec2(x,y);
+}
+
+vec2 c_square(vec2 c) {
+  return vec2(
+    pow(c.x, 2.) - pow(c.y, 2.),
+    2. * c.x * c.y
+  );
+}
+
+float c_magnitude(vec2 c) {
+  return sqrt(pow(c.x, 2.) + pow(c.y, 2.));
+}
+
+float mandel(vec2 pt) {
+  int iterations = 0;
+  vec2 last = vec2(0.,0.);;
+  for(int i = 1; i <= 4096; i++) {
+    last = c_square(last) + pt;
+    iterations = i;
+    if(i > max_iterations || c_magnitude(last) > 2.)
+      break;
+  }
+  return float(iterations)/float(max_iterations);
+}
 
 void main() {
-  float red = gl_FragCoord.x / float(window_size.x);
-  float green = gl_FragCoord.y / float(window_size.y);
-  gl_FragColor = vec4( red , green, cos(gl_FragCoord.x), 1);
+  float mandel = mandel(scale());
+  gl_FragColor = vec4(mandel , 1, 1, 1);
 }

@@ -16,9 +16,15 @@ class GLRenderer {
     this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(this.aVertexPosition)
 
-    const windowSizeLoc = gl.getUniformLocation(program, "window_size")
+    const windowSizeLoc    = gl.getUniformLocation(program, "window_size"),
+          maxIterationsLoc = gl.getUniformLocation(program, "max_iterations"),
+          boxLoc           = gl.getUniformLocation(program, "box")
 
-    this.setUWindowSize = (w,h)=> { gl.uniform2i(windowSizeLoc, w, h) }
+    this.setUWindowSize    = (w,h)=> { gl.uniform2i(windowSizeLoc, w, h) }
+    this.setUMaxIterations = (i)=> { gl.uniform1i(maxIterationsLoc, i) }
+    this.setUBox = ({top, left, width,height})=> {
+      gl.uniform4f(boxLoc,left,top,width,height)
+    }
 
     gl.useProgram(program)
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer)
@@ -57,6 +63,8 @@ class GLRenderer {
     gl.clearColor(1, 1, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
     this.setUWindowSize(gl.canvas.width,gl.canvas.height)
+    this.setUMaxIterations(iterations)
+    this.setUBox(box)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     console.log("render")
