@@ -9,17 +9,20 @@ class GLRenderer {
     gl.attachShader(program, this.createShader(gl.VERTEX_SHADER, vertex))
     gl.attachShader(program, this.createShader(gl.FRAGMENT_SHADER, fragment))
     gl.linkProgram(program)
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)){
-      console.log(gl.getProgramInfoLog(program))
-      gl.deleteProgram(program)
-    }
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+      throw gl.getProgramInfoLog(program)
+
     this.positionBuffer = this.initPositionBuffer()
     this.aVertexPosition = gl.getAttribLocation(program, "aVertexPosition")
     gl.enableVertexAttribArray(this.aVertexPosition)
 
-    gl.clearColor(1, 1, 0, 1)
-    gl.clear(gl.COLOR_BUFFER_BIT)
+    const windowSizeLoc = gl.getUniformLocation(program, "window_size")
+
+    this.setUWindowSize = (w,h)=> { gl.uniform2i(windowSizeLoc, w, h) }
+
     gl.useProgram(program)
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer)
+    gl.vertexAttribPointer(this.aVertexPosition, 2, gl.FLOAT, false, 0, 0)
   }
 
   createShader(type, source) {
@@ -30,8 +33,7 @@ class GLRenderer {
       if (gl.getShaderParameter(shader, gl.COMPILE_STATUS))
         return shader
       else {
-        console.log(gl.getShaderInfoLog(shader))
-        gl.deleteShader(shader)
+        throw gl.getShaderInfoLog(shader)
       }
   }
 
@@ -52,9 +54,10 @@ class GLRenderer {
 
   render({iterations,box}) {
     const {gl} = this
+    gl.clearColor(1, 1, 0, 1)
+    gl.clear(gl.COLOR_BUFFER_BIT)
+    this.setUWindowSize(gl.canvas.width,gl.canvas.height)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer)
-    gl.vertexAttribPointer(this.aVertexPosition, 2, gl.FLOAT, false, 0, 0)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     console.log("render")
   }

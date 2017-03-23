@@ -6,6 +6,11 @@ precision mediump float;
 #endif
 precision mediump int;
 
+uniform ivec2 window_size;
+
+
 void main() {
-  gl_FragColor = vec4(1, 1, 0.5, 1);
+  float red = gl_FragCoord.x / float(window_size.x);
+  float green = gl_FragCoord.y / float(window_size.y);
+  gl_FragColor = vec4( red , green, cos(gl_FragCoord.x), 1);
 }
