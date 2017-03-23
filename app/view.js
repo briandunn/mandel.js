@@ -1,6 +1,7 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import Composite from 'composite'
+import GLRenderer from 'gl_renderer'
 
 class Mandelbrot extends React.Component {
   constructor() {
@@ -18,14 +19,16 @@ class Mandelbrot extends React.Component {
   componentDidMount() {
     this.updateDimensions()
     window.addEventListener("resize", () => this.updateDimensions())
+    this.glRenderer = new GLRenderer(this.refs.canvas)
   }
 
   componentDidUpdate() {
-    clearTimeout(this.throttle)
-    this.throttle = setTimeout(() => {
-      const composite = new Composite(this.refs.canvas, {box: this.props.box, iterations: this.props.iterations})
-      composite.draw(this.workers)
-    }, 250)
+    // clearTimeout(this.throttle)
+    // this.throttle = setTimeout(() => {
+    //   const composite = new Composite(this.refs.canvas, {box: this.props.box, iterations: this.props.iterations})
+    //   composite.draw(this.workers)
+    // }, 250)
+    this.glRenderer.render(this.props)
   }
 
   render() {
@@ -58,6 +61,19 @@ class Zoom extends React.Component {
     e.stopPropagation()
     const {pageX,pageY} = e
     this.setState((state) => state.drag ? {stop: {x:pageX,y:pageY}} : {})
+  }
+
+  mousewheel(e) {
+    e.stopPropagation()
+    e.preventDefault()
+    const {wheelDeltaX,wheelDeltaY} = e.nativeEvent
+    const {clientWidth, clientHeight} = this.refs.zoomable
+    this.props.onZoom({
+      top:  -1 * wheelDeltaY / clientHeight,
+      left: -1 * wheelDeltaX / clientWidth,
+      width: 1,
+      height: 1
+    })
   }
 
   zoom(e) {
@@ -93,9 +109,10 @@ class Zoom extends React.Component {
       <div
         className='zoomable'
         ref='zoomable'
-        onMouseMove={this.mousemove.bind(this)}
         onMouseUp={this.mouseup.bind(this)}
-        onMouseDown={this.mousedown.bind(this)}>
+        onMouseDown={this.mousedown.bind(this)}
+        onMouseMove={this.mousemove.bind(this)}
+        onWheel={this.mousewheel.bind(this)}>
       <div className='zoom' onMouseDown={this.zoom.bind(this)} style={this.style()}> </div>
       {this.props.children}
       </div>)

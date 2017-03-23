@@ -3,13 +3,16 @@ const commonRequireDefinition = require('commonjs-require-definition');
 
 exports.config = {
   files: {
-  javascripts: {
-    joinTo: {
-      'app.js': /^(node_modules|app\/.*\.js)/,
-      'worker.js': ['app/chunk.js', 'app/complex.js', 'app/worker.js']
-    }
-  },
-  stylesheets: {joinTo: 'app.css'}
+    javascripts: {
+      joinTo: {
+        'app.js': /^(node_modules|app\/.*\.(?:gl|js))/,
+        'worker.js': ['app/chunk.js', 'app/complex.js', 'app/worker.js']
+      },
+      order: {
+        after: [/\.gl$/]
+      }
+    },
+    stylesheets: {joinTo: 'app.css'}
   },
   modules: {
     wrapper: (path, data) => {
@@ -24,6 +27,9 @@ exports.config = {
     }
   },
   plugins: {
+    text: {
+      pattern: /\.gl$/
+    },
     babel: {
       presets: ["es2015", "react"]
     }

@@ -1,0 +1,13 @@
+//vim:set ft=c
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+precision mediump int;
+
+attribute vec2 aVertexPosition;
+
+void main(void) {
+  gl_Position = vec4(aVertexPosition, 1.0, 1.0);
+}

@@ -15,7 +15,12 @@ const zoom = (previous, next)=> ({
 const reducer = (state,action)=> {
   switch(action.type) {
     case 'ZOOM':
-      return Object.assign({}, state, zoom(state, action.box))
+      return Object.assign(
+        {},
+        state,
+        zoom(state, action.box),
+        {zoomHistory: state.zoomHistory.concat([{height:state.height,width:state.width,left:state.left,top:state.top}])}
+      )
     case 'ITERATIONS':
       return Object.assign({}, state, {iterations: action.iterations})
     default:
@@ -23,7 +28,7 @@ const reducer = (state,action)=> {
   }
 }
 
-const defaults = {iterations: 40, width: 5, height: 3, top: -1.5, left: -2.5}
+const defaults = {iterations: 40, width: 5, height: 3, top: -1.5, left: -2.5, zoomHistory: []}
 
 const store = createStore(reducer, fromHash(defaults, window.location.hash), window.devToolsExtension ? compose(devToolsExtension()): compose())
 const App = connect((model) => ({ model }))(View)

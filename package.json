@@ -20,6 +20,7 @@
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.3",
     "redux": "^3.6.0",
+    "text-brunch": "^1.0.0",
     "uglify-js-brunch": "^2"
   }
 }
