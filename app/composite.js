@@ -3,20 +3,19 @@ import Chunk from 'chunk'
 let lastChunk = null
 
 class Composite {
-  constructor(canvas, {box, iterations}) {
-    this.box = box
-    this.iterations = iterations
+  constructor(canvas) {
     this.canvas = canvas
+    this.workers = Array(5).fill(0).map(()=> new Worker('worker.js'))
   }
 
-  chunk(count) {
+  chunk(count, {box,iterations}) {
     return Array(count).fill(0).map((_,i)=> {
       const chunkWidth = (this.canvas.width / count) >> 0
       return new Chunk({
         frame: {width: this.canvas.width, height:this.canvas.height},
         offset: i,
-        box: this.box,
-        iterations: this.iterations,
+        box: box,
+        iterations: iterations,
         imageData: this.canvas.getContext('2d').getImageData(chunkWidth * i, 0, chunkWidth, this.canvas.height)
       })
     })
@@ -52,12 +51,13 @@ class Composite {
     console.log((performance.now() - start) + "ms scale")
   }
 
-  draw(workers) {
+  render(props) {
     const start = performance.now()
+    const workers = this.workers
     let pending = 0
     if(!!lastChunk)
-      this.scale(this.chunk(1)[0],lastChunk)
-    this.chunk(workers.length).forEach((chunk, i)=> {
+      this.scale(this.chunk(1, props)[0],lastChunk)
+    this.chunk(workers.length, props).forEach((chunk, i)=> {
       const worker = workers[i % workers.length]
 
       worker.onmessage = ({data: {chunk}})=> {
@@ -65,7 +65,7 @@ class Composite {
         this.setChunk(new Chunk(chunk))
         if(pending == 0) {
           console.log((performance.now() - start) + "ms render")
-          lastChunk = this.chunk(1)[0]
+          lastChunk = this.chunk(1, props)[0]
         }
       }
 

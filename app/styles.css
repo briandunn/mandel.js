@@ -6,6 +6,7 @@ body { margin: 0 }
     position: absolute;
     background-color: #888;
     mix-blend-mode: color-dodge;
+    border: 1px dashed white;
 }
 
 input[type=number] {

@@ -6,7 +6,6 @@ import GLRenderer from 'gl_renderer'
 class Mandelbrot extends React.Component {
   constructor() {
     super()
-    this.workers = Array(5).fill(0).map(()=> new Worker('worker.js'))
     this.state = {width: 0, height: 0}
   }
 
@@ -19,16 +18,12 @@ class Mandelbrot extends React.Component {
   componentDidMount() {
     this.updateDimensions()
     window.addEventListener("resize", () => this.updateDimensions())
-    this.glRenderer = new GLRenderer(this.refs.canvas)
+    this.renderer = new GLRenderer(this.refs.canvas)
+    // this.renderer = new Composite(this.refs.canvas)
   }
 
   componentDidUpdate() {
-    // clearTimeout(this.throttle)
-    // this.throttle = setTimeout(() => {
-    //   const composite = new Composite(this.refs.canvas, {box: this.props.box, iterations: this.props.iterations})
-    //   composite.draw(this.workers)
-    // }, 250)
-    this.glRenderer.render(this.props)
+    this.renderer.render(this.props)
   }
 
   render() {
@@ -58,6 +53,7 @@ class Zoom extends React.Component {
   }
 
   mousemove(e) {
+    //FIXME: constrain to canvas aspect ratio
     e.stopPropagation()
     const {pageX,pageY} = e
     this.setState((state) => state.drag ? {stop: {x:pageX,y:pageY}} : {})

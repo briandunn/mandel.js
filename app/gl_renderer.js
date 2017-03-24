@@ -67,6 +67,7 @@ class GLRenderer {
 
   render({iterations,box}) {
     const {gl} = this
+    const start = performance.now()
     gl.clearColor(1, 1, 0, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
     this.setUWindowSize(gl.canvas.width,gl.canvas.height)
@@ -74,7 +75,7 @@ class GLRenderer {
     this.setUBox(box)
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-    console.log("render")
+    console.log((performance.now() - start) + "ms render")
   }
 }
 

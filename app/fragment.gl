@@ -1,4 +1,4 @@
-//vim:set ft=c
+//vim: set ft=c
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
 #else
@@ -31,17 +31,13 @@ vec2 c_square(vec2 c) {
   );
 }
 
-float c_magnitude(vec2 c) {
-  return sqrt(pow(c.x, 2.) + pow(c.y, 2.));
-}
-
 float mandel(vec2 pt) {
   int iterations = 0;
   vec2 last = vec2(0.,0.);
   for(int i = 1; i <= max_max; i++) {
     last = c_square(last) + pt;
     iterations = i;
-    if(i > max_iterations || c_magnitude(last) > 2.)
+    if(i > max_iterations || length(last) > 2.)
       break;
   }
   return float(iterations)/float(max_iterations);
@@ -54,9 +50,9 @@ vec3 toColor(float f) {
   vec3 color;
   /* color.r = f; color.g = f; color.b = f; return color; */
   f *= fmax_max;
-  color.r = floor(f / bytes_2);
-  color.g = floor((f - color.r * bytes_2) / 256.0);
-  color.b = floor(f - color.r * bytes_2 - color.g * 256.0);
+  color.b = floor(f / bytes_2);
+  color.g = floor((f - color.b * bytes_2) / 256.0);
+  color.r = floor(f - color.b * bytes_2 - color.g * 256.0);
   return color / 256.0;
 }
 
