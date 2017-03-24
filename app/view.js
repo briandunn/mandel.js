@@ -134,7 +134,7 @@ const View = connect(
 )(
   ({box,iterations,onZoom,changeIterations})=> (
     <Zoom onZoom={onZoom}>
-      <input type="number" min="0" value={iterations} onChange={changeIterations}/>
+      <input type="number" min="0" max={0xffffff} value={iterations} onChange={changeIterations}/>
       <Mandelbrot box={box} iterations={iterations}/>
     </Zoom>
   )

@@ -11,6 +11,9 @@ uniform ivec2 window_size;
 uniform int max_iterations;
 uniform vec4 box;
 
+const int max_max = 0xffffff;
+const float fmax_max = float(max_max);
+
 vec2 scale() {
   float left   = box[0];
   float top    = box[1];
@@ -34,8 +37,8 @@ float c_magnitude(vec2 c) {
 
 float mandel(vec2 pt) {
   int iterations = 0;
-  vec2 last = vec2(0.,0.);;
-  for(int i = 1; i <= 4096; i++) {
+  vec2 last = vec2(0.,0.);
+  for(int i = 1; i <= max_max; i++) {
     last = c_square(last) + pt;
     iterations = i;
     if(i > max_iterations || c_magnitude(last) > 2.)
@@ -44,7 +47,20 @@ float mandel(vec2 pt) {
   return float(iterations)/float(max_iterations);
 }
 
+// 1 << 16
+const float bytes_2 = 65536.;
+
+vec3 toColor(float f) {
+  vec3 color;
+  /* color.r = f; color.g = f; color.b = f; return color; */
+  f *= fmax_max;
+  color.r = floor(f / bytes_2);
+  color.g = floor((f - color.r * bytes_2) / 256.0);
+  color.b = floor(f - color.r * bytes_2 - color.g * 256.0);
+  return color / 256.0;
+}
+
 void main() {
   float mandel = mandel(scale());
-  gl_FragColor = vec4(mandel , 1, 1, 1);
+  gl_FragColor = vec4(toColor(mandel), 1);
 }
