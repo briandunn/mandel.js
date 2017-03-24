@@ -1,13 +1,23 @@
 const vertex = require('vertex')
 const fragment = require('fragment')
 
+const createShader = (gl, type, source)=> {
+    const shader = gl.createShader(type)
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
+    if (gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+      return shader
+    else
+      throw gl.getShaderInfoLog(shader)
+}
+
 class GLRenderer {
   constructor(canvas) {
     this.gl = canvas.getContext('webgl')
     const {gl} = this, program = gl.createProgram()
 
-    gl.attachShader(program, this.createShader(gl.VERTEX_SHADER, vertex))
-    gl.attachShader(program, this.createShader(gl.FRAGMENT_SHADER, fragment))
+    gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vertex))
+    gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fragment))
     gl.linkProgram(program)
     if (!gl.getProgramParameter(program, gl.LINK_STATUS))
       throw gl.getProgramInfoLog(program)
@@ -29,18 +39,6 @@ class GLRenderer {
     gl.useProgram(program)
     gl.bindBuffer(gl.ARRAY_BUFFER, this.positionBuffer)
     gl.vertexAttribPointer(this.aVertexPosition, 2, gl.FLOAT, false, 0, 0)
-  }
-
-  createShader(type, source) {
-      const {gl} = this
-      const shader = gl.createShader(type)
-      gl.shaderSource(shader, source)
-      gl.compileShader(shader)
-      if (gl.getShaderParameter(shader, gl.COMPILE_STATUS))
-        return shader
-      else {
-        throw gl.getShaderInfoLog(shader)
-      }
   }
 
   initPositionBuffer() {
