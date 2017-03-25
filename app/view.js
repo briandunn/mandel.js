@@ -62,14 +62,31 @@ class Zoom extends React.Component {
   mousewheel(e) {
     e.stopPropagation()
     e.preventDefault()
-    const {wheelDeltaX,wheelDeltaY} = e.nativeEvent
+
+    const {deltaX,deltaY} = e
     const {clientWidth, clientHeight} = this.refs.zoomable
-    this.props.onZoom({
-      top:  wheelDeltaY / clientHeight,
-      left: -1 * wheelDeltaX / clientWidth,
-      width: 1,
-      height: 1
-    })
+
+    const pan = (e)=> {
+      return {
+        top:    -1 * deltaY / clientHeight,
+        left:   deltaX / clientWidth,
+        width:  1,
+        height: 1
+      }
+    }
+
+    const pinch = (e)=> {
+      const zoomSpeed = 7
+      const scale = (deltaY / clientWidth) * zoomSpeed
+      return {
+        top:    scale * -0.5,
+        left:   scale * -0.5,
+        width:  scale + 1,
+        height: scale + 1
+      }
+    }
+
+    this.props.onZoom(e.ctrlKey ? pinch(e) : pan(e))
   }
 
   zoom(e) {
