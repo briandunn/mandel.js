@@ -9,7 +9,6 @@ body { margin: 0 }
     border: 1px dashed white;
 }
 
-input[type=number] {
+form {
     position: absolute;
-    width: 50px;
 }

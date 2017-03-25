@@ -15,20 +15,26 @@ class Mandelbrot extends React.Component {
     })
   }
 
-  componentDidMount() {
-    this.updateDimensions()
-    window.addEventListener("resize", () => this.updateDimensions())
-    this.renderer = new GLRenderer(this.refs.canvas)
-    // this.renderer = new Composite(this.refs.canvas)
+  initRenderer() {
+    this.renderer = new (this.props.gl ?  GLRenderer : Composite)(this.refs.canvas)
   }
 
-  componentDidUpdate() {
+  componentDidMount() {
+    this.updateDimensions()
+    this.initRenderer()
+    window.addEventListener("resize", () => this.updateDimensions())
+  }
+
+  componentDidUpdate(newProps) {
+    if(newProps.gl != this.props.gl)
+      this.initRenderer()
     this.renderer.render(this.props)
   }
 
   render() {
     return (
       <canvas
+        key={this.props.gl}
         ref='canvas'
         width={this.state.width}
         height={this.state.height}/>)
@@ -133,7 +139,7 @@ class Zoom extends React.Component {
 }
 
 const View = connect(
-  (model)=> ({box: model, iterations: model.iterations}),
+  (model)=> ({box: model, iterations: model.iterations, gl: model.gl}),
   (dispatch)=> (
     {
       onZoom:(box)=> {
@@ -142,13 +148,19 @@ const View = connect(
       changeIterations:(e)=> {
         dispatch({type: 'ITERATIONS', iterations: +e.target.value})
       },
+      setRenderer:(e)=> {
+        dispatch({type: 'GL', gl: e.target.checked})
+      }
     }
   )
 )(
-  ({box,iterations,onZoom,changeIterations})=> (
+  ({box,iterations,gl,onZoom,changeIterations,setRenderer})=> (
     <Zoom onZoom={onZoom}>
+      <form>
       <input type="number" min="0" max={0xffffff} value={iterations} onChange={changeIterations}/>
-      <Mandelbrot box={box} iterations={iterations}/>
+      <input type="checkbox" checked={gl} onChange={setRenderer} />
+      </form>
+      <Mandelbrot box={box} gl={gl} iterations={iterations}/>
     </Zoom>
   )
 )
