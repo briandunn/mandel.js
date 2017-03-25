@@ -66,6 +66,8 @@ class GLRenderer {
   }
 
   render({iterations,box}) {
+    if(box.width < 1e-4 || box.height < 1e-4)
+      console.log('switch to 2d?')
     const {gl} = this
     const start = performance.now()
     gl.clearColor(1, 1, 0, 1)
