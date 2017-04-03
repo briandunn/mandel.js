@@ -11,8 +11,8 @@ uniform ivec2 window_size;
 uniform int max_iterations;
 uniform vec4 box;
 
-const int max_max = 0xffffff;
-const float fmax_max = float(max_max);
+const int max_max = 0xfff;
+const float fmax_max = float(0xffffff);
 
 vec2 scale() {
   float left   = box[0];
@@ -48,7 +48,6 @@ const float bytes_2 = 65536.;
 
 vec3 toColor(float f) {
   vec3 color;
-  /* color.r = f; color.g = f; color.b = f; return color; */
   f *= fmax_max;
   color.b = floor(f / bytes_2);
   color.g = floor((f - color.b * bytes_2) / 256.0);

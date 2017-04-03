@@ -157,7 +157,7 @@ const View = connect(
   ({box,iterations,gl,onZoom,changeIterations,setRenderer})=> (
     <Zoom onZoom={onZoom}>
       <form>
-      <input type="number" min="0" max={0xffffff} value={iterations} onChange={changeIterations}/>
+      <input type="number" min="0" max={0xfff} value={iterations} onChange={changeIterations}/>
       <input type="checkbox" checked={gl} onChange={setRenderer} />
       </form>
       <Mandelbrot box={box} gl={gl} iterations={iterations}/>
