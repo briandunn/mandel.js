@@ -15,13 +15,12 @@ const int max_max = 0xfff;
 const float fmax_max = float(0xffffff);
 
 vec2 scale() {
-  float left   = box[0];
-  float top    = box[1];
-  float width  = box[2];
-  float height = box[3];
-  float x = (gl_FragCoord.x / window_size.x) * width + left;
-  float y = (gl_FragCoord.y / window_size.y) * height + top;
-  return vec2(x,y);
+  /* float left   = box[0]; */
+  /* float top    = box[1]; */
+  /* float width  = box[2]; */
+  /* float height = box[3]; */
+
+  return gl_FragCoord.xy / window_size * box.zw + box.xy;
 }
 
 vec2 c_square(vec2 c) {
