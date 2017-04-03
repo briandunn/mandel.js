@@ -39,7 +39,7 @@ class GLRenderer {
           maxIterationsLoc = gl.getUniformLocation(program, "max_iterations"),
           boxLoc           = gl.getUniformLocation(program, "box")
 
-    this.setUWindowSize    = (w,h)=> { gl.uniform2i(windowSizeLoc, w, h) }
+    this.setUWindowSize    = (w,h)=> { gl.uniform2f(windowSizeLoc, w, h) }
     this.setUMaxIterations = (i)=> { gl.uniform1i(maxIterationsLoc, i) }
     this.setUBox = ({top, left, width,height})=> {
       gl.uniform4f(boxLoc,left,top,width,height)
@@ -70,12 +70,12 @@ class GLRenderer {
       console.log('switch to 2d?')
     const {gl} = this
     const start = performance.now()
-    gl.clearColor(1, 1, 0, 1)
+    gl.clearColor(1, 1, 1, 1)
     gl.clear(gl.COLOR_BUFFER_BIT)
-    this.setUWindowSize(gl.canvas.width,gl.canvas.height)
+    this.setUWindowSize(gl.drawingBufferWidth, gl.drawingBufferHeight)
     this.setUMaxIterations(iterations)
     this.setUBox(box)
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height)
+    gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
     console.log((performance.now() - start) + "ms render")
   }

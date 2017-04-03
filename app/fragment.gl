@@ -6,7 +6,7 @@ precision mediump float;
 #endif
 precision mediump int;
 
-uniform ivec2 window_size;
+uniform vec2 window_size;
 //left top width height
 uniform int max_iterations;
 uniform vec4 box;
@@ -19,8 +19,8 @@ vec2 scale() {
   float top    = box[1];
   float width  = box[2];
   float height = box[3];
-  float x = (gl_FragCoord.x / float(window_size.x)) * width + left;
-  float y = (gl_FragCoord.y / float(window_size.y)) * height + top;
+  float x = (gl_FragCoord.x / window_size.x) * width + left;
+  float y = (gl_FragCoord.y / window_size.y) * height + top;
   return vec2(x,y);
 }
 
