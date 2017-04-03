@@ -41,10 +41,46 @@ class Mandelbrot extends React.Component {
   }
 }
 
+
+const touches = (e)=> Array.from(e.touches || []).map(t => ({x: t.clientX, y: t.clientY}))
+
+const touch = (touches, onZoom, {clientWidth,clientHeight})=> {
+  if(touches.length < 2 ) return
+  let current = touches[touches.length - 1]
+  let previous = touches[touches.length - 2]
+
+  const pan = ()=> {
+    current = current[0]
+    previous = previous[0]
+    return {
+      top:    (current.y - previous.y) / clientHeight,
+      left:   -1 * (current.x - previous.x) / clientWidth,
+      width:  1,
+      height: 1
+    }
+  }
+
+  const zoom = ()=> {
+    const distance = (pt1,pt2) => Math.sqrt(Math.pow(pt1.x - pt2.x,2) + Math.pow(pt1.y-pt2.y,2))
+    const distances = [previous, current].map((t)=>
+      distance(...t) / distance({x:0,y:0}, {x:clientWidth,y:clientHeight})
+    )
+    const scale = (distances[0] - distances[1]) * 3
+    return {
+      top:    scale * -0.5,
+      left:   scale * -0.5,
+      width:  scale + 1,
+      height: scale + 1
+    }
+  }
+
+  onZoom(current.length == 1 ? pan() : zoom())
+}
+
 class Zoom extends React.Component {
   constructor() {
     super()
-    this.state = {}
+    this.state = {touches: []}
   }
 
   mousedown(e) {
@@ -72,7 +108,7 @@ class Zoom extends React.Component {
     const {deltaX,deltaY} = e
     const {clientWidth, clientHeight} = this.refs.zoomable
 
-    const pan = (e)=> {
+    const pan = ()=> {
       return {
         top:    -1 * deltaY / clientHeight,
         left:   deltaX / clientWidth,
@@ -81,7 +117,7 @@ class Zoom extends React.Component {
       }
     }
 
-    const pinch = (e)=> {
+    const pinch = ()=> {
       const zoomSpeed = 7
       const scale = (deltaY / clientWidth) * zoomSpeed
       return {
@@ -92,7 +128,26 @@ class Zoom extends React.Component {
       }
     }
 
-    this.props.onZoom(e.ctrlKey ? pinch(e) : pan(e))
+    this.props.onZoom(e.ctrlKey ? pinch() : pan())
+  }
+
+  touchend(e) {
+    e.preventDefault()
+    this.setState({touches: []})
+  }
+
+  touchstart(e) {
+    e.preventDefault()
+
+    this.setState({touches: [touches(e)]})
+  }
+
+  touch(e) {
+    e.preventDefault()
+    const t = touches(e)
+    this.setState((state) => ({touches: state.touches.concat([t])}),
+      (state)=> touch(this.state.touches, this.props.onZoom, this.refs.zoomable)
+    )
   }
 
   zoom(e) {
@@ -131,7 +186,10 @@ class Zoom extends React.Component {
         onMouseUp={this.mouseup.bind(this)}
         onMouseDown={this.mousedown.bind(this)}
         onMouseMove={this.mousemove.bind(this)}
-        onWheel={this.mousewheel.bind(this)}>
+        onWheel={this.mousewheel.bind(this)}
+        onTouchEnd={this.touchend.bind(this)}
+        onTouchMove={this.touch.bind(this)}
+        onTouchStart={this.touchstart.bind(this)}>
       <div className='zoom' onMouseDown={this.zoom.bind(this)} style={this.style()}> </div>
       {this.props.children}
       </div>)
