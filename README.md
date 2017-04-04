@@ -1,5 +1,1 @@
-# Mandel
-
-# A Mandelbrot explorer
-
-https://briandunn.github.io/mandel.js
+Files here will be copied as-is to public directory.
