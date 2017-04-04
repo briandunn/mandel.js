@@ -21,7 +21,8 @@ const reducer = (state,action)=> {
         zoom(state, action.box)
       )
     case 'ITERATIONS':
-      return Object.assign({}, state, {iterations: action.iterations})
+      const iterations = Math.max(Math.min(action.iterations, 0xfff), 0)
+      return Object.assign({}, state, {iterations: iterations})
     case 'GL':
       return Object.assign({}, state, {gl: action.gl})
     default:
