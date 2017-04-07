@@ -239,7 +239,7 @@ const View = connect(
       <input type="checkbox" checked={gl} onChange={setRenderer} />
       </form>
       <TouchSlider onChange={changeIterations} value={iterations}/>
-      <Mandelbrot box={box} gl={gl} iterations={iterations}/>
+      <Mandelbrot {...{box,gl,iterations}}/>
     </Zoom>
   )
 )
