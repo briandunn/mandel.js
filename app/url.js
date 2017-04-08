@@ -1,4 +1,4 @@
-const toHash = (state)=> `i${state.iterations}l${state.left}t${state.top}w${state.width}h${state.height}`
+const toHash = (state)=> `i${state.iterations}x${state.x}y${state.y}s${state.scale}`
 
 const fromHash = (defaults, hash)=> {
   const decimalRegExp = /(-?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?)/,

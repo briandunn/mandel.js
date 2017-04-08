@@ -5,7 +5,7 @@ import Zoom from 'components/zoom'
 import TouchSlider from 'components/touch_slider'
 
 const View = connect(
-  (model)=> ({box: model, iterations: model.iterations, gl: model.gl}),
+  (model)=> (model),
   (dispatch)=> (
     {
       onZoom:(box)=> {
@@ -20,14 +20,14 @@ const View = connect(
     }
   )
 )(
-  ({box,iterations,gl,onZoom,changeIterations,setRenderer})=> (
+  ({x,y,scale,iterations,gl,onZoom,changeIterations,setRenderer})=> (
     <Zoom onZoom={onZoom}>
       <form>
       <input type="number" min="0" max={0xfff} value={iterations} onChange={changeIterations}/>
       <input type="checkbox" checked={gl} onChange={setRenderer} />
       </form>
       <TouchSlider onChange={changeIterations} value={iterations}/>
-      <Mandelbrot {...{box,gl,iterations}}/>
+      <Mandelbrot {...{x,y,scale,gl,iterations}}/>
     </Zoom>
   )
 )

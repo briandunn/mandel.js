@@ -6,10 +6,9 @@ import View from 'view'
 import {fromHash,toHash} from 'url'
 
 const zoom = (previous, next)=> ({
-  height: previous.height * next.height,
-  width: previous.width * next.width,
-  left: previous.left + (next.left * previous.width),
-  top: previous.top + (next.top * previous.height)
+  scale: previous.scale * next.scale,
+  x: previous.x + (next.x * previous.scale),
+  y: previous.y + (next.y * previous.scale)
 })
 
 const reducer = (state,action)=> {
@@ -30,7 +29,7 @@ const reducer = (state,action)=> {
   }
 }
 
-const defaults = {iterations: 40, width: 5, height: 3, top: -1.5, left: -2.5, gl: true}
+const defaults = {iterations: 40, scale: 5, x: 0, y: 0, gl: true}
 
 const store = createStore(reducer, fromHash(defaults, window.location.hash), window.devToolsExtension ? compose(devToolsExtension()): compose())
 const App = connect((model) => ({ model }))(View)

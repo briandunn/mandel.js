@@ -68,10 +68,9 @@ class Zoom extends React.Component {
 
     const pan = ()=> {
       return {
-        top:    -1 * deltaY / clientHeight,
-        left:   deltaX / clientWidth,
-        width:  1,
-        height: 1
+        y:     -1 * deltaY / clientHeight,
+        x:     deltaX / clientWidth,
+        scale: 1,
       }
     }
 
@@ -79,10 +78,9 @@ class Zoom extends React.Component {
       const zoomSpeed = 7
       const scale = (deltaY / clientWidth) * zoomSpeed
       return {
-        top:    scale * -0.5,
-        left:   scale * -0.5,
-        width:  scale + 1,
-        height: scale + 1
+        y:     0,
+        x:     0,
+        scale: scale + 1,
       }
     }
 

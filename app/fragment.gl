@@ -8,18 +8,18 @@ precision mediump int;
 
 uniform vec2 window_size;
 uniform int max_iterations;
-uniform vec4 box;
+uniform float scale;
+uniform vec2 center;
 
 const int max_max = 0xfff;
 const float fmax_max = float(0xffffff);
 
-vec2 scale() {
-  /* float left   = box[0]; */
-  /* float top    = box[1]; */
-  /* float width  = box[2]; */
-  /* float height = box[3]; */
+vec2 zoom() {
+  float ratio = window_size.x / window_size.y;
 
-  return gl_FragCoord.xy / window_size * box.zw + box.xy;
+  vec2 domain_dimensions = vec2(ratio * scale / 2., scale / 2.);
+
+  return vec2(gl_FragCoord.x * ratio / window_size.x , gl_FragCoord.y / window_size.y) * scale + (center - domain_dimensions);
 }
 
 vec2 c_square(vec2 c) {
@@ -54,6 +54,6 @@ vec3 toColor(float f) {
 }
 
 void main() {
-  float mandel = mandel(scale());
+  float mandel = mandel(zoom());
   gl_FragColor = vec4(toColor(mandel), 1);
 }
