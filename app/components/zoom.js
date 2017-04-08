@@ -11,10 +11,9 @@ const touch = (touches, onZoom, {clientWidth,clientHeight})=> {
     current = current[0]
     previous = previous[0]
     return {
-      top:    (current.y - previous.y) / clientHeight,
-      left:   -1 * (current.x - previous.x) / clientWidth,
-      width:  1,
-      height: 1
+      x:   -1 * ((current.x - previous.x) * (clientWidth / clientHeight))/ clientWidth,
+      y:    (current.y - previous.y ) / clientHeight,
+      scale:  1,
     }
   }
 
@@ -25,10 +24,9 @@ const touch = (touches, onZoom, {clientWidth,clientHeight})=> {
     )
     const scale = (distances[0] - distances[1]) * 3
     return {
-      top:    scale * -0.5,
-      left:   scale * -0.5,
-      width:  scale + 1,
-      height: scale + 1
+      y: 0,
+      x: 0,
+      scale: scale + 1
     }
   }
 
