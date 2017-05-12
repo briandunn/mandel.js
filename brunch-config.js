@@ -30,9 +30,7 @@ exports.config = {
     text: {
       pattern: /\.gl$/
     },
-    babel: {
-      presets: ["es2015", "react"]
-    }
+    babel: { }
   },
   npm: {
     enabled: true,

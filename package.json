@@ -7,7 +7,8 @@
   "repository": "",
   "scripts": {
     "start": "brunch watch --server",
-    "build": "brunch build --production"
+    "build": "brunch build --production",
+    "test": "mocha"
   },
   "dependencies": {},
   "devDependencies": {
@@ -16,6 +17,8 @@
     "babel-preset-react": "^6.23.0",
     "brunch": "^2",
     "clean-css-brunch": "^2",
+    "jsdom": "^9.12.0",
+    "mocha": "^3.2.0",
     "react": "^15.4.2",
     "react-dom": "^15.4.2",
     "react-redux": "^5.0.3",

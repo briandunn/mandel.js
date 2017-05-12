@@ -1,8 +1,8 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import Mandelbrot from 'components/mandelbrot'
-import Zoom from 'components/zoom'
-import TouchSlider from 'components/touch_slider'
+import Mandelbrot from './components/mandelbrot'
+import Zoom from './components/zoom'
+import TouchSlider from './components/touch_slider'
 
 const View = connect(
   (model)=> (model),

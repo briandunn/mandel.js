@@ -1,5 +1,5 @@
-const vertex = require('vertex')
-const fragment = require('fragment')
+const vertex = require('./vertex')
+const fragment = require('./fragment')
 
 const createProgram = (gl, vertexSource, fragmentSource)=> {
 

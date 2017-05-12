@@ -1,6 +1,6 @@
 import React from 'react'
-import Composite from 'composite'
-import GLRenderer from 'gl_renderer'
+import Composite from '../composite'
+import GLRenderer from '../gl_renderer'
 
 class Mandelbrot extends React.Component {
   constructor() {
