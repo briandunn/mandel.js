@@ -1,0 +1,7 @@
+name: Mandelbrot Explorer
+url: https://briandunn.github.io/mandel.js/#i43
+description: |
+  A way to play with Mandlebrot fractals
+technologies:
+  - JavaScript
+  - WebGL
